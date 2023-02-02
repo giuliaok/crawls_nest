@@ -18,3 +18,5 @@ def text_getter(wet_file, url):
                 texts.append(text)
 
 df['text'] = trial_df.apply(lambda x: text_getter(x['needed_warc_2'], x['url']), axis = 1)
+
+#commit

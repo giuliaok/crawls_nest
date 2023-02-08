@@ -16,6 +16,7 @@ def text_getter(wet_file, url):
                 text = record.content_stream().read() #with raw_stream it does not work, I get error 'LimitReader' object is not callable
                 text = text.decode('utf-8')
                 texts.append(text)
+    return texts
 
 df['text'] = trial_df.apply(lambda x: text_getter(x['needed_warc_2'], x['url']), axis = 1)
 

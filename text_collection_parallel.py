@@ -25,15 +25,15 @@ trial_df['needed_warc'] = trial_df['needed_warc'].str.replace('/warc/', '/wet/')
 
 def text_getter(wet_file, url):
     r = requests.get(wet_file, stream = True)
-    texts = []
-    for record in ArchiveIterator(r.raw):
+    print('got it')
+    for record in ArchiveIterator(r.raw):        
         if record.rec_headers.get_header('WARC-Target-URI') == url:
             if record.rec_type == 'conversion':
                 text = record.content_stream().read() #with raw_stream it does not work, I get error 'LimitReader' object is not callable
                 text = text.decode('utf-8')
-                texts.append(text)
-    print('done')
-    return texts
+                break
+                print('done')
+    return text
 
 
 
@@ -51,6 +51,7 @@ def text_getter_parallel(df):
         url = df.loc[index, 'url']
         print(url)
         r = session.get(wet_file, stream = True)
+        print('got it')
         for record in ArchiveIterator(r.raw):
             if record.rec_headers.get_header('WARC-Target-URI') == url:
                 if record.rec_type == 'conversion':
@@ -75,7 +76,7 @@ if __name__ == '__main__':
 
     #set_start_method("fork")
     #res = text_getter_parallel(trial_df)
-    res = parallelize_df(trial_df, text_getter_parallel)
+    res = parallelize_df(trial_df, lambda_getter)
     print(res)
 
 

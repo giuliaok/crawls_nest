@@ -31,8 +31,8 @@ def text_getter(wet_file, url):
             if record.rec_type == 'conversion':
                 text = record.content_stream().read() #with raw_stream it does not work, I get error 'LimitReader' object is not callable
                 text = text.decode('utf-8')
-                break
                 print('done')
+                break
     return text
 
 
@@ -41,8 +41,9 @@ def lambda_getter(df):
     df['text'] = df.apply(lambda x: text_getter(x['needed_warc'], x['url']), axis = 1)
     return df
 
+#if you want to avoid the lambda function (not that I would)
 
-def text_getter_parallel(df):
+def text_getter_non_lambda(df):
     session = requests.Session()
     retryer = Retry(
         total=5, read=5, connect=5, backoff_factor=0.2, status=1, redirect=1, status_forcelist=None)

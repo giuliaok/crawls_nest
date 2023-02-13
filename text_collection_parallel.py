@@ -25,16 +25,17 @@ trial_df['needed_warc'] = trial_df['needed_warc'].str.replace('/warc/', '/wet/')
 
 def text_getter(wet_file, url):
     r = requests.get(wet_file, stream = True)
-    print('got it')
+    # print('got it')
     for record in ArchiveIterator(r.raw):        
         if record.rec_headers.get_header('WARC-Target-URI') == url:
             if record.rec_type == 'conversion':
-                text = record.content_stream().read() #with raw_stream it does not work, I get error 'LimitReader' object is not callable
+                # with raw_stream it does not work, I get error 'LimitReader' object is not callable
+                text = record.content_stream().read() 
                 text = text.decode('utf-8')
-                print('done')
-                break
-    return text
-
+                # print('done')
+                return text
+    # no text is found so raise error
+    raise ValueError("text not found")
 
 
 def lambda_getter(df): 
@@ -56,9 +57,11 @@ def text_getter_non_lambda(df):
         for record in ArchiveIterator(r.raw):
             if record.rec_headers.get_header('WARC-Target-URI') == url:
                 if record.rec_type == 'conversion':
-                    text = record.content_stream().read() #with raw_stream it does not work, I get error 'LimitReader' object is not callable
+                    # with raw_stream it does not work, I get error 'LimitReader' object is not callable
+                    text = record.content_stream().read() 
                     text = text.decode('utf-8')
                     df.loc[index,'text'] = text
+                    # need to add some break statements around here
     session.close()
     print('completed chunk')
     return df

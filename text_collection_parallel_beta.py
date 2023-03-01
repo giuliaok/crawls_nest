@@ -4,6 +4,7 @@ import pandas as pd
 import json
 import requests
 from warcio import ArchiveIterator
+from warcio.recordloader import ArchiveLoadFailed
 import os 
 import numpy as np 
 from multiprocessing import set_start_method
@@ -15,6 +16,7 @@ from requests.packages import urllib3
 from requests.packages.urllib3.util.retry import Retry
 from tqdm import tqdm 
 import pickle 
+import sys
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -28,16 +30,19 @@ def warc_getter(df):
 def text_getter(wet_file, url):
     r = requests.get(wet_file, stream = True)
     # print('got it')
-    for record in ArchiveIterator(r.raw):        
-        if record.rec_headers.get_header('WARC-Target-URI') == url:
-            if record.rec_type == 'conversion':
-                # with raw_stream it does not work, I get error 'LimitReader' object is not callable
-                text = record.content_stream().read() 
-                text = text.decode('utf-8')
-                print('done')
-                return text
+    try: 
+        for record in ArchiveIterator(r.raw):        
+            if record.rec_headers.get_header('WARC-Target-URI') == url:
+                if record.rec_type == 'conversion':
+                    # with raw_stream it does not work, I get error 'LimitReader' object is not callable
+                    text = record.content_stream().read() 
+                    text = text.decode('utf-8')
+                    print('done')
+                    return text
+    except ArchiveLoadFailed:
+            print('Encountered a bad WARC record.', file=sys.stderr) # not completely sure this is working yet? 
     # no text is found so raise error
-    raise ValueError("text not found")
+    # raise ValueError("text not found") #this breaks everything 
 
 
 def lambda_getter(df): 
@@ -82,19 +87,26 @@ def parallelize_df(df, function):
 '''
 '''
 
-# write code to pickle every tot, if you want to save the data. Not that I thnk you should 
+# write code to pickle every n iterations, if you want to save the data. Not that I thnk you should 
 
-def getter_and_saver(df, n_iterations):
+def getter_and_saver(df, n_iterations): # TO DO: list comprehension for faster results 
     # heavy on memory 
     results_to_pickle = pd.DataFrame()
     df_split = np.array_split(df, n_iterations)
-    for i in tqdm(df_split):
-        results = parallelize_df(i, lambda_getter)
-        total_results = pd.concat([results_to_pickle, results])
-        pickle.dump(total_results, open('trial_28_02.pkl', 'wb'))
-    return total_results.head()
+    for df in tqdm(df_split):
+        results_to_pickle = pd.concat([results_to_pickle, parallelize_df(df, lambda_getter)])
+        results_to_pickle.to_pickle('trial_28_02.pkl')
+    return results_to_pickle.head()
 
 #still saves just the last one, write better for loop. But in generak it works heheh. Also nicely with tqdm
+
+def postcode_finder(text):
+    postcodes = re.findall(r'([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})', text)
+    return list(postcodes) 
+
+def lambda_postcode(df):
+    df['postcode'] = df.apply(lambda x: postcode_finder(x['text']), axis = 1)
+    return df 
 
 
 if __name__ == '__main__':

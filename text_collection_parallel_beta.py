@@ -14,6 +14,7 @@ import multiprocessing
 from requests.adapters import HTTPAdapter
 from requests.packages import urllib3
 from requests.packages.urllib3.util.retry import Retry
+from requests.exceptions import ConnectionError
 from tqdm import tqdm 
 import pickle 
 import sys
@@ -28,7 +29,13 @@ def warc_getter(df):
     return df
 
 def text_getter(wet_file, url):
-    r = requests.get(wet_file, stream = True)
+    try:
+        r = requests.get(wet_file, stream = True)
+    except OSError as exc: # dunno ig this makes it move to the next one? This part needs to be tested 
+        if exc.errno == 55:
+            print('[Errno 55] No buffer space available')
+            time.sleep(0.1)
+            # shall I break here? No cause I want to continue. And no raise. 
     # print('got it')
     try: 
         for record in ArchiveIterator(r.raw):        
@@ -95,10 +102,11 @@ def getter_and_saver(df, n_iterations): # TO DO: list comprehension for faster r
     df_split = np.array_split(df, n_iterations)
     for df in tqdm(df_split):
         results_to_pickle = pd.concat([results_to_pickle, parallelize_df(df, lambda_getter)])
-        results_to_pickle.to_pickle('trial_28_02.pkl')
+        results_to_pickle.to_pickle('results_06_03.pkl')
     return results_to_pickle.head()
 
-#still saves just the last one, write better for loop. But in generak it works heheh. Also nicely with tqdm
+# add parameter to get out the NaN --> in vue of possible packaging 
+
 
 def postcode_finder(text):
     postcodes = re.findall(r'([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})', text)
@@ -108,14 +116,28 @@ def lambda_postcode(df):
     df['postcode'] = df.apply(lambda x: postcode_finder(x['text']), axis = 1)
     return df 
 
+# use this to monitor the size of the dataframe! So that it does not get out of hand. 
+def bytesto(bytes, to, bsize=1024): 
+    a = {'k' : 1, 'm': 2, 'g' : 3, 't' : 4, 'p' : 5, 'e' : 6 }
+    r = float(bytes)
+    return bytes / (bsize ** a[to])
+# would need to apply this after a certain number of iterations, using a line looking like 
+
+def get_size(df):
+    size = sys.getsizeof(df)
+    size_in_gb = bytesto(size, 'g')
+    return size_in_gb
+
+
 
 if __name__ == '__main__':
 
-    trial_df = df[0:100]
+    trial_df = df[0:2000]
     trial_df = warc_getter(trial_df)
     print(trial_df)
-    results = getter_and_saver(trial_df, 2)
+    results = getter_and_saver(trial_df, 20)
     print(results)
+
     #set_start_method("fork")
     #res = text_getter_parallel(trial_df)
 

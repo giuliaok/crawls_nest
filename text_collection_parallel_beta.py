@@ -102,19 +102,32 @@ def getter_and_saver(df, n_iterations): # TO DO: list comprehension for faster r
     df_split = np.array_split(df, n_iterations)
     for df in tqdm(df_split):
         results_to_pickle = pd.concat([results_to_pickle, parallelize_df(df, lambda_getter)])
-        results_to_pickle.to_pickle('results_06_03.pkl')
+        results_to_pickle.to_pickle('results_10_03.pkl')
     return results_to_pickle.head()
 
 # add parameter to get out the NaN --> in vue of possible packaging 
-
 
 def postcode_finder(text):
     postcodes = re.findall(r'([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})', text)
     return list(postcodes) 
 
-def lambda_postcode(df):
-    df['postcode'] = df.apply(lambda x: postcode_finder(x['text']), axis = 1)
+def postcode_counter(text):
+    postcodes = postcode_finder(text)
+    webpage_postcodes = [postcode[1] for postcode in postcodes]
+    dictionary_with_counts = {x:webpage_postcodes.count(x) for x in webpage_postcodes}
+    return dictionary_with_counts
+
+def counter_webpage(df):
+    df['postcode'] = df['text'].apply(postcode_counter)
+    return df
+
+def postcode_counter_website(df):
+    df['postcode'] = df['text'].apply(postcode_counter)
+    df = df.groupby(['url_host_name']).agg({'postcode': list}).reset_index()
+    df['website_postcodes'] = df['postcode'].apply(lambda x: {k: v for d in x for k, v in d.items()})
+    df = df.drop(['postcode'], axis = 1)
     return df 
+results_website = postcode_counter_website(df)
 
 # use this to monitor the size of the dataframe! So that it does not get out of hand. 
 def bytesto(bytes, to, bsize=1024): 
@@ -132,11 +145,12 @@ def get_size(df):
 
 if __name__ == '__main__':
 
-    trial_df = df[0:2000]
-    trial_df = warc_getter(trial_df)
+    trial_df = df[0:1000]
+    trial_df = warc_getter(trial_df) 
     print(trial_df)
     results = getter_and_saver(trial_df, 20)
-    print(results)
+    print(results) #when number is low ValueError: Cannot set a DataFrame with multiple columns to the single column text. its becvause if i break again i have to do like at least 1000 columns 
+'''
 
     #set_start_method("fork")
     #res = text_getter_parallel(trial_df)
@@ -144,4 +158,4 @@ if __name__ == '__main__':
     #res = parallelize_df(trial_df, lambda_getter)
     #print(res)
 
-
+'''

@@ -70,7 +70,7 @@ def website_aggregator(df):
 def text_getter(wet_file, url):
     session = requests.Session()
     retryer = Retry(
-        total=5, read=10, connect=5, backoff_factor=0.2, status=1, redirect=1, status_forcelist=None) #levi had put the backoff_factor at 0.2...
+        total=5, read=5, connect=5, backoff_factor=0.2, status=1, redirect=1, status_forcelist=None) #levi had put the backoff_factor at 0.2...
     adapter = HTTPAdapter(max_retries=retryer)
     adapter.max_retries.respect_retry_after_header = False #MOST IMPORTANT LINE!!!!
     session.mount("http://", adapter)

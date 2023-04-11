@@ -70,7 +70,7 @@ def website_aggregator(df):
 def text_getter(wet_file, url):
     session = requests.Session()
     retryer = Retry(
-        total=5, read=10, connect=5, backoff_factor=0.2, status=1, redirect=1, status_forcelist=None) #levi had put the backoff_factor at 0.2...
+        total=5, read=5, connect=5, backoff_factor=0.2, status=1, redirect=1, status_forcelist=None) #levi had put the backoff_factor at 0.2...
     adapter = HTTPAdapter(max_retries=retryer)
     adapter.max_retries.respect_retry_after_header = False #MOST IMPORTANT LINE!!!!
     session.mount("http://", adapter)
@@ -146,9 +146,9 @@ def getter_and_saver(df, n_iterations): # TO DO: list comprehension for faster r
 if __name__ == "__main__":
 
 
-    trial_df = df[0:100]
+    trial_df = df[0:1000]
     trial_df = warc_getter(trial_df) 
-    results = getter_and_saver(trial_df, 5)
+    results = getter_and_saver(trial_df, 20)
     print(results) #when number is low ValueError: Cannot set a DataFrame with multiple columns to the single column text. its becvause if i break again i have to do like at least 1000 columns 
 
     # parser = argparse.ArgumentParser()

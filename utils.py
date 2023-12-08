@@ -1,3 +1,6 @@
+import pandas as pd 
+import re
+
 def warc_getter(df):
     """
     Get /wet/ file (containing url's text) from /warc/

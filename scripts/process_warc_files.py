@@ -1,6 +1,7 @@
 import pandas as pd
 import utils
 import os
+import argparse
 
 class CCFiles:
     def __init__(self, data_directory) -> None:
@@ -33,10 +34,40 @@ class CCFiles:
         clean_df_with_links = df_with_links.drop(columns = ['html'])
         return clean_df_with_links.head()
 
-    def get(self, text = True, industry_class = False) -> pd.DataFrame:
+    def get(self, geography = None, text = True, industry_class = False) -> pd.DataFrame:
+        """
+        Get text of archived webpages, a combination of text and postcodes per geography,
+        or industrial classification
+        """
         df = pd.read_pickle(f'{self.data_directory}/domains.pkl')
         df = utils.lambda_getter(df)
         df.dropna(subset = ['text'])
         df_text = df.mask(df.eq('None')).dropna(subset = 'text')  
-        results_df = utils.postcode_counter_webpage(df_text)
+        results_df = utils.postcode_counter_webpage(df_text, geography = geography)
         return print(results_df)
+
+
+
+def main():
+    parser = argparse.ArgumentParser(description="CCFiles Utility")
+    parser.add_argument("--data-directory", required=True, help="Path to the data directory")
+    parser.add_argument("--get-html", action="store_true", help="Call get_html method")
+    parser.add_argument("--get", action="store_true", help="Call get method")
+    parser.add_argument("--geography", help="Geography argument for get method")
+    args = parser.parse_args()
+
+    cc_files_instance = CCFiles(data_directory=args.data_directory)
+
+    if args.get_html:
+        result = cc_files_instance.get_html()
+    elif args.get:
+        result = cc_files_instance.get(geography=args.geography)
+    else:
+        print("Specify either --get-html or --get option.")
+        return
+
+
+if __name__ == "__main__":
+    main()
+
+

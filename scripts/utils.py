@@ -36,20 +36,26 @@ def postcode_finder(text):
     postcodes = re.findall(r'([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})', text)
     return list(postcodes) 
 
-def postcode_counter(text):
+def postcode_counter(text, geography = None): #REWRITE
     """
     Extract postcodes from regex, count how many times each postcode appears in a webpage and store the postcode + count in a dictionary 
     """
     postcodes = postcode_finder(text)
-    webpage_postcodes = [postcode[1] for postcode in postcodes]
-    dictionary_with_counts = {x:webpage_postcodes.count(x) for x in webpage_postcodes}
-    return dictionary_with_counts
+    if geography != None:
+        postcodes = [i for i in postcodes if i.startswith(geography.get('geography'))] #fa che va bene sia lower  che upper case
+        webpage_postcodes = [postcode[1] for postcode in postcodes]
+        dictionary_with_counts = {x:webpage_postcodes.count(x) for x in webpage_postcodes}
+        return dictionary_with_counts
+    else:
+        webpage_postcodes = [postcode[1] for postcode in postcodes]
+        dictionary_with_counts = {x:webpage_postcodes.count(x) for x in webpage_postcodes} 
+        return dictionary_with_counts
 
-def postcode_counter_webpage(df):
+def postcode_counter_webpage(df, geography = None):
     """
     Get dictionaries of postcodes + counts for webpage  
     """
-    df['postcode'] = df['text'].apply(postcode_counter)
+    df['postcode'] = df['text'].apply(postcode_counter, geography = geography)
     return df
 
 def website_aggregator(df):

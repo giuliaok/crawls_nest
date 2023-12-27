@@ -42,8 +42,7 @@ def postcode_counter(text, geography = None): #REWRITE
     """
     postcodes = postcode_finder(text)
     if geography != None:
-        postcodes = [i for i in postcodes if i.startswith(geography.get('geography'))] #fa che va bene sia lower  che upper case
-        webpage_postcodes = [postcode[1] for postcode in postcodes]
+        postcodes = [i for i in postcodes if i.startswith(geography.get('geography'))] #TO-DO: accept both lower and upper case geographies
         dictionary_with_counts = {x:webpage_postcodes.count(x) for x in webpage_postcodes}
         return dictionary_with_counts
     else:

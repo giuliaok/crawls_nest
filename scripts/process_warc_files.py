@@ -46,8 +46,6 @@ class CCFiles:
         results_df = utils.postcode_counter_webpage(df_text, geography = geography)
         return print(results_df)
 
-
-
 def main():
     parser = argparse.ArgumentParser(description="CCFiles Utility")
     parser.add_argument("--data-directory", required=True, help="Path to the data directory")

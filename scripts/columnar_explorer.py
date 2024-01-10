@@ -84,6 +84,7 @@ def main():
     columnar_explorer_instance = ColumnarExplorer(data_directory=args.data_directory)
 
     result = columnar_explorer_instance.get_doman()
+    return result 
 
 if __name__ == "__main__":
     main()

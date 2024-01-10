@@ -12,6 +12,7 @@ class ColumnarExplorer:
         self.monthly_path = monthly_path
         self.schema = self._fetch_schema()
         self.all_paths = self._get_all_paths()
+        self.months_years = self._month_year_parser()
         self.monthly_urls = self._get_monthly_indices()
 
     def _fetch_schema(self):
@@ -37,6 +38,49 @@ class ColumnarExplorer:
             elements.append(element.text)
             
         return elements
+
+    def _month_year_parser(self):
+        """
+        This function works nicely but makes everything pretty slow:)
+        """
+        url = "https://www.commoncrawl.org/get-started"
+        response = requests.get(url).content
+        soup = BeautifulSoup(response, 'html.parser')
+        heading_ultras_elements = soup.find_all('h6', class_='heading-ultras')
+
+        elements = []
+        for element in heading_ultras_elements:
+            elements.append(element.text)
+
+        crawl_urls = []
+        for element in elements: 
+            crawl_description_url = 'https://data.commoncrawl.org/crawl-data/' + element + '/index.html'
+            crawl_urls.append(crawl_description_url)    
+
+        dates = []
+        for url in crawl_urls: 
+            resp = requests.get(url).content
+            b_soup = BeautifulSoup(resp, 'html.parser')
+            p_tag = b_soup.find('p')
+            if p_tag:
+                p_tag_text = p_tag.text.strip()
+                match = re.search(r'the\s+(.*?)\s+crawl', p_tag_text, re.IGNORECASE)
+                if match:
+                    result = match.group(1)
+                dates.append(result)        
+        dates[-3:] = ['None None'] *3   
+        dictionary = dict(zip(elements, dates))
+
+        result_list = []
+        for key, value in dictionary.items():
+            name = key
+            month, year = value.split(' ')
+            result_dict = {'name': name, 'month': month, 'year': year}
+            result_list.append(result_dict)
+
+        extracted_dicts = [value for value in new_dict.values()]
+
+        return extracted_dicts
 
     def _get_monthly_indices(self):
         """

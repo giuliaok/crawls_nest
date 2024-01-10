@@ -6,6 +6,7 @@ from tqdm import tqdm
 import requests
 import os
 import numpy as np 
+import re
 
 class ColumnarExplorer: 
     def __init__(self, monthly_path) -> None: 
@@ -115,7 +116,7 @@ class ColumnarExplorer:
                 os.system(link_to_download)
                 df = pd.read_parquet('columnar.gz.parquet', engine='fastparquet')
                 data = df.loc[df['url_host_private_suffix'] == domain] 
-                print('number of found f'{domain}' in this chunk is')
+                #print('number of found f'{domain}' in this chunk is')
                 print(len(data))
                 urls = pd.concat([urls, data], axis=0).reset_index(drop=True)
                 print(len(urls))

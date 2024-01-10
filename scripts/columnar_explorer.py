@@ -74,25 +74,16 @@ class ColumnarExplorer:
         results = pd.concat([results, urls])
         return results
 
-#TO - DO: change the below
 def main():
-    parser = argparse.ArgumentParser(description="CCFiles Utility")
-    parser.add_argument("--data-directory", required=True, help="Path to the data directory")
-    parser.add_argument("--get-html", action="store_true", help="Call get_html method")
-    parser.add_argument("--get", action="store_true", help="Call get method")
-    parser.add_argument("--geography", help="Geography argument for get method")
+    parser = argparse.ArgumentParser(description="ColumnarExplorer Utility")
+    parser.add_argument("--monthly_path", required=True, help="Path to the data directory")
+    parser.add_argument("--domain", action="store_true", help="Select specific domain to collect")
+    parser.add_argument("--clean", action="store_true", help="Constrain the dataset for ease of storage")
     args = parser.parse_args()
 
-    cc_files_instance = CCFiles(data_directory=args.data_directory)
+    columnar_explorer_instance = ColumnarExplorer(data_directory=args.data_directory)
 
-    if args.get_html:
-        result = cc_files_instance.get_html()
-    elif args.get:
-        result = cc_files_instance.get(geography=args.geography)
-    else:
-        print("Specify either --get-html or --get option.")
-        return
-
+    result = columnar_explorer_instance.get_doman()
 
 if __name__ == "__main__":
     main()

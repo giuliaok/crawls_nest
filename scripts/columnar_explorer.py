@@ -11,6 +11,7 @@ class ColumnarExplorer:
     def __init__(self, monthly_path) -> None: 
         self.monthly_path = monthly_path
         self.schema = self._fetch_schema()
+        self.all_paths = self._get_all_paths()
         self.monthly_urls = self._get_monthly_indices()
 
     def _fetch_schema(self):
@@ -21,6 +22,21 @@ class ColumnarExplorer:
         resp = requests.get(schema)
 
         return json.loads(resp.text)
+
+    def _get_all_paths(self):
+        """
+        Extract the paths of all crawls. Manually available at "https://www.commoncrawl.org/get-started
+        """
+        url = "https://www.commoncrawl.org/get-started"
+        response = requests.get(url).content
+        soup = BeautifulSoup(response, 'html.parser')
+        heading_ultras_elements = soup.find_all('h6', class_='heading-ultras')
+
+        elements = []
+        for element in heading_ultras_elements:
+            elements.append(element.text)
+            
+        return elements
 
     def _get_monthly_indices(self):
         """

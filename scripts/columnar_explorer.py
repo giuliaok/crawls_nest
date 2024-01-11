@@ -10,11 +10,18 @@ import re
 
 class ColumnarExplorer: 
     def __init__(self, monthly_path) -> None: 
+        """
         self.monthly_path = monthly_path
         self.schema = self._fetch_schema()
         self.all_paths = self._get_all_paths()
         self.months_years = self._month_year_parser()
         self.monthly_urls = self._get_monthly_indices()
+        """
+        self.schema = self._fetch_schema()
+        self.all_paths = self._get_all_paths()
+        self.months_years = self._month_year_extractor()
+        self.monthly_urls = self._get_monthly_indices()
+        self.data_parser = self._parse_data()
 
     def _fetch_schema(self):
         """
@@ -83,10 +90,50 @@ class ColumnarExplorer:
 
         return extracted_dicts
 
+    def _parse_data(self):
+        """
+        Use the month_year_extractor to define date of choice 
+        """
+        desired_month = args.arg1
+        desired_year = args.arg2
+        data = self.months_years
+        for dict in data:
+            if dict['year'] == desired_year and desired_month in dict['month']:
+                extracted_name = dict['name']
+                break
+        else:
+            print(f"No matching entry found for {desired_month} {desired_year}")
+        return extracted_name 
+
+
     def _get_monthly_indices(self):
         """
-        Extract indices to access monthly dumps of the crawl 
+        Extract indices to access monthly dumps of the crawl, template of needed url is 'https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz' 
         """
+        CC_INDEX_SERVER = 'http://index.commoncrawl.org/'
+        DATA_ACCESS_PREFIX = CC_INDEX_SERVER + 'crawl-data/'
+        DATA_ACCESS_SUFFIX = '/cc-index-table.paths.gz'
+        INDEX_NAME = self.data_parser
+
+        index_paths = requests.get(DATA_ACCESS_PREFIX+INDEX_NAME+DATA_ACCESS_SUFFIX)
+        open('monthly_index.gz', 'wb').write(index_paths.content)
+        links_for_download_cdx = []
+        with gzip.open('monthly_index.gz', 'rb') as f:
+            for line in f:
+                links_for_download_cdx.append(line)
+        os.remove('monthly_index.gz')
+        links_for_download_cdx_strings = [str(byte_string, 'UTF-8').rstrip('\n') for byte_string in links_for_download_cdx]
+        links_to_get_indices = [CC_INDEX_SERVER + x for x in links_for_download_cdx_strings] 
+        links_to_get_indices = links_to_get_indices[0:6]
+
+        return(links_to_get_indices)
+
+    """   
+
+    def _get_monthly_indices(self):
+        
+        #Extract indices to access monthly dumps of the crawl 
+        
         index_paths = requests.get(self.monthly_path)
         open('monthly_index.gz', 'wb').write(index_paths.content)
         links_for_download_cdx = []
@@ -99,6 +146,7 @@ class ColumnarExplorer:
         links_to_get_indices = links_to_get_indices[0:6]
 
         return(links_to_get_indices)
+    """
 
     def get_domain(self, domain: str, chunks: int, clean = False):   #set default n of chunks as 1
         """

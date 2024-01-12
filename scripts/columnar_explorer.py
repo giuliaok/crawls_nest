@@ -5,23 +5,22 @@ import os
 from tqdm import tqdm 
 import requests
 import os
-import numpy as np 
+import numpy as np
+from bs4 import BeautifulSoup 
 import re
 
 class ColumnarExplorer: 
-    def __init__(self, monthly_path) -> None: 
-        """
-        self.monthly_path = monthly_path
+    def __init__(self, month, year) -> None: 
         self.schema = self._fetch_schema()
-        self.all_paths = self._get_all_paths()
+        self.month = month
+        self.year = year 
         self.months_years = self._month_year_parser()
-        self.monthly_urls = self._get_monthly_indices()
-        """
-        self.schema = self._fetch_schema()
+        self.data_parser = self._parse_data(
+            month=self.month, year=self.year,
+        )
         self.all_paths = self._get_all_paths()
-        self.months_years = self._month_year_extractor()
         self.monthly_urls = self._get_monthly_indices()
-        self.data_parser = self._parse_data()
+             
 
     def _fetch_schema(self):
         """
@@ -49,7 +48,8 @@ class ColumnarExplorer:
 
     def _month_year_parser(self):
         """
-        This function works nicely but makes everything pretty slow:)
+        Construct a dictionary of the type {'name': 'CC-MAIN-2023-50', 'month': 'November/December', 'year': '2023'} for each 
+        segment of the crawl. Should take under 5 seconds. 
         """
         url = "https://www.commoncrawl.org/get-started"
         response = requests.get(url).content
@@ -86,23 +86,20 @@ class ColumnarExplorer:
             result_dict = {'name': name, 'month': month, 'year': year}
             result_list.append(result_dict)
 
-        extracted_dicts = [value for value in new_dict.values()]
+        return result_list
 
-        return extracted_dicts
-
-    def _parse_data(self):
+    def _parse_data(self, month, year):
         """
         Use the month_year_extractor to define date of choice 
         """
-        desired_month = args.arg1
-        desired_year = args.arg2
         data = self.months_years
         for dict in data:
-            if dict['year'] == desired_year and desired_month in dict['month']:
+            if dict['year'] == self.year and self.month in dict['month']:
                 extracted_name = dict['name']
+                print(extracted_name)
                 break
         else:
-            print(f"No matching entry found for {desired_month} {desired_year}")
+            raise ValueError(f"No matching entry found for {month} {year}")
         return extracted_name 
 
 
@@ -110,12 +107,16 @@ class ColumnarExplorer:
         """
         Extract indices to access monthly dumps of the crawl, template of needed url is 'https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz' 
         """
-        CC_INDEX_SERVER = 'http://index.commoncrawl.org/'
+        print('start')
+        CC_INDEX_SERVER = 'https://data.commoncrawl.org/'
         DATA_ACCESS_PREFIX = CC_INDEX_SERVER + 'crawl-data/'
         DATA_ACCESS_SUFFIX = '/cc-index-table.paths.gz'
         INDEX_NAME = self.data_parser
+        INDEX_PATHS = DATA_ACCESS_PREFIX+INDEX_NAME+DATA_ACCESS_SUFFIX
+        print(INDEX_PATHS)
 
-        index_paths = requests.get(DATA_ACCESS_PREFIX+INDEX_NAME+DATA_ACCESS_SUFFIX)
+        index_paths = requests.get(INDEX_PATHS)
+        print(index_paths)
         open('monthly_index.gz', 'wb').write(index_paths.content)
         links_for_download_cdx = []
         with gzip.open('monthly_index.gz', 'rb') as f:
@@ -128,32 +129,12 @@ class ColumnarExplorer:
 
         return(links_to_get_indices)
 
-    """   
-
-    def _get_monthly_indices(self):
-        
-        #Extract indices to access monthly dumps of the crawl 
-        
-        index_paths = requests.get(self.monthly_path)
-        open('monthly_index.gz', 'wb').write(index_paths.content)
-        links_for_download_cdx = []
-        with gzip.open('monthly_index.gz', 'rb') as f:
-            for line in f:
-                links_for_download_cdx.append(line)
-        os.remove('monthly_index.gz')
-        links_for_download_cdx_strings = [str(byte_string, 'UTF-8').rstrip('\n') for byte_string in links_for_download_cdx]
-        links_to_get_indices = ['https://data.commoncrawl.org/' + x for x in links_for_download_cdx_strings] 
-        links_to_get_indices = links_to_get_indices[0:6]
-
-        return(links_to_get_indices)
-    """
-
-    def get_domain(self, domain: str, chunks: int, clean = False):   #set default n of chunks as 1
+    def get_domain(self, domain: str, chunks: int, cleanse = False):   #set default n of chunks as 1
         """
         Get monthly records of a user defnined domain (e.g. .com)
         """
         links_to_get_indices = self.monthly_urls
-        chunks_of_indices = numpy.array_split(links_to_get_indices, chunks)
+        chunks_of_indices = np.array_split(links_to_get_indices, chunks)
         results = pd.DataFrame()
 
         for chunk in chunks_of_indices:
@@ -170,7 +151,7 @@ class ColumnarExplorer:
                 print(len(urls))
                 os.remove('columnar.gz.parquet')
 
-                if clean:
+                if cleanse:
                     urls = urls.drop(['url_surtkey', 'url_host_tld', 'url_host_2nd_last_part', 'url_host_3rd_last_part', 
                                     'url_host_4th_last_part', 'url_host_5th_last_part', 'url_host_name_reversed', 'url_protocol', 
                                     'url_port', 'url_path', 'url_query', 'content_digest', 'content_mime_detected'], axis = 1) 	
@@ -183,16 +164,27 @@ class ColumnarExplorer:
         results = pd.concat([results, urls])
         return results
 
+import argparse
+
 def main():
     parser = argparse.ArgumentParser(description="ColumnarExplorer Utility")
-    parser.add_argument("--monthly_path", required=True, help="Path to the data directory")
+    parser.add_argument("--month", required=True, help="Month")
+    parser.add_argument("--year", required=True, help="Year")
     parser.add_argument("--domain", action="store_true", help="Select specific domain to collect")
-    parser.add_argument("--clean", action="store_true", help="Constrain the dataset for ease of storage")
+    parser.add_argument("--cleanse", action="store_true", help="Constrain the dataset for ease of storage")
     args = parser.parse_args()
 
-    columnar_explorer_instance = ColumnarExplorer(data_directory=args.data_directory)
+    # initialise columnar explorer object
+    columnar_explorer_instance = ColumnarExplorer(
+        data_directory=args.data_directory,
+        month=args.month,
+        year=args.year,
+    )
 
-    result = columnar_explorer_instance.get_doman()
+    result = columnar_explorer_instance.get_doman(
+        domain=args.domain, 
+        cleanse=args.cleanse
+    )
     return result 
 
 if __name__ == "__main__":

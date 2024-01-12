@@ -4,7 +4,7 @@ Repository hosting code to access the Common Crawl from your own machine 🥳
 
 ...work in progress
 
-*NB* This Readme file is intended for users! If you would like to contribute to this repo, please refer to the [`guide for contributors`](https://github.com/giuliaok/crawls_nest/blob/main/guide_for_contributors.md)
+**NB**: This Readme file is intended for users! If you would like to contribute to this repo, please refer to the [`guide for contributors`](https://github.com/giuliaok/crawls_nest/blob/main/guide_for_contributors.md)
 
 Background
 ----------

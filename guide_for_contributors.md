@@ -16,9 +16,9 @@ ColumnarExplorer
 
 For most crawls of the archive (2014 onwards), we can use the provided index to WARC files and URLs in a columnar format. This is substantially a dataframe looking something like:
 
-| Header 1 | Header 2 | Header 3 | Header 4 | Header 5 | Header 6 | Header 7 | Header 8 | Header 9 |
+| url_surtkey | url | url_host_name | url_host_tld | url_host_2nd_last_part | ... | content_languages | warc_filename | warc_record_length |
 |----------|----------|----------|----------|----------|----------|----------|----------|----------|
-| Data 1   | Data 2   | Data 3   | Data 4   | Data 5   | Data 6   | Data 7   | Data 8   | Data 9   |
+| com,wordpress,examplewebsite)/   | https://examplewebsite.wordpress.com/  | examplewebsite.wordpress.com | com  | wordpress  | ... | eng  | crawl-data/CC-MAIN-2022-33/segments/1659882572... | 	16771  |
 
 
 

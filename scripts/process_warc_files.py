@@ -43,8 +43,25 @@ class CCFiles:
         df = utils.lambda_getter(df)
         df.dropna(subset = ['text'])
         df_text = df.mask(df.eq('None')).dropna(subset = 'text')  
-        results_df = utils.postcode_counter_webpage(df_text, geography = geography)
+        #NEW CODE
+        if geography:
+            results_df = utils.postcode_counter_webpage(df_text, geography = geography)
+        if text == True:
+            results_df = utils.text_classfier(df_text)
+        #end new code     
         return print(results_df)
+
+
+    def get_and_save(self, df_saving_size):
+        df = pd.read_pickle(f'{self.data_directory}/domains.pkl')
+        results = pd.DataFrame()
+        df_split = np.array_split(df, df_saving_size)
+        for df in tqdm(df_split):
+            results = pd.concat([results, parallelize_df(df, lambda_postcode_getter)]) 
+            results_to_pickle = website_aggregator(results) 
+            results_to_pickle.to_pickle(self.data_directory)
+        return results_to_pickle, results 
+
 
 def main():
     parser = argparse.ArgumentParser(description="CCFiles Utility")
@@ -52,6 +69,7 @@ def main():
     parser.add_argument("--get-html", action="store_true", help="Call get_html method")
     parser.add_argument("--get", action="store_true", help="Call get method")
     parser.add_argument("--geography", help="Geography argument for get method")
+    parser.add_argument("--df_saving_size", help="Defines how often you want to save the results of file processing")
     args = parser.parse_args()
 
     cc_files_instance = CCFiles(data_directory=args.data_directory)

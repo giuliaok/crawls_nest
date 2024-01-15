@@ -99,6 +99,14 @@ def text_getter(wet_file, url):
         """
     session.close()
 
+def parallelize_df(df, function):
+    n_cores = os.cpu_count()
+    df_split = np.array_split(df, n_cores)
+    with get_context('fork').Pool(processes = n_cores) as pool:
+        df = pd.concat(pool.map(function, df_split))
+        pool.close()
+        pool.join()
+    return df
 
 
 

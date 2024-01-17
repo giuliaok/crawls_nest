@@ -1,18 +1,24 @@
 # crawls_nest
 
+- [Background](#background)
+- [Working with Common Crawl data](#working-with-common-crawl-data)
+- [Usage](#usage)
+	- [File collection](#file-collection)
+	- [File processing](#file-processing)
+	- [Requirements](#requirements)
+
 Repository hosting code to access the Common Crawl from your own machine 🥳
 
 ...work in progress
 
 **NB**: This Readme file is intended for users! If you would like to contribute to this repo, please refer to the [`guide for contributors`](https://github.com/giuliaok/crawls_nest/blob/main/guide_for_contributors.md)
 
-Background
-----------
+# Background
 
 The code builds on the [`warcio`](https://github.com/webrecorder/warcio) library for fast [WARC
 Format](<https://en.wikipedia.org/wiki/Web_ARChive>) reading and writing. 
 
-Fetching records from Common Crawl
+# Working with Common Crawl data 
 ---------
 
 crawls_nest depends on the
@@ -23,8 +29,7 @@ library to read records and content of WARC files. Please see the
 [`warcio documentation`](https://github.com/webrecorder/warcio/blob/master/README.rst) for
 usage instructions of the library.
 
-Crawl's nest usage
----------
+# Usage
 
 ### File collection
 

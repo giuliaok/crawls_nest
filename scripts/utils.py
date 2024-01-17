@@ -1,5 +1,4 @@
 import pandas as pd 
-import utils
 import requests
 from requests.adapters import HTTPAdapter
 from requests.packages import urllib3
@@ -12,7 +11,9 @@ from warcio.recordloader import ArchiveLoadFailed
 from warcio.statusandheaders import StatusAndHeadersParserException
 import time
 import re
-import json 
+import json
+from tqdm import tqdm  
+
 
 def warc_getter(df):
     """
@@ -25,7 +26,6 @@ def lambda_getter(df):
     """
     Get text from warc files  
     """
-
     df['text'] = df.apply(lambda x: text_getter(x['needed_warc'], x['url']), axis = 1) 
     return df
 
@@ -41,8 +41,8 @@ def postcode_counter(text, geography = None): #REWRITE
     Extract postcodes from regex, count how many times each postcode appears in a webpage and store the postcode + count in a dictionary 
     """
     postcodes = postcode_finder(text)
-    if geography != None:
-        postcodes = [i for i in postcodes if i.startswith(geography.get('geography'))] #TO-DO: accept both lower and upper case geographies
+    if geography:
+        webpage_postcodes = [i for i in postcodes if i.startswith(geography)] 
         dictionary_with_counts = {x:webpage_postcodes.count(x) for x in webpage_postcodes}
         return dictionary_with_counts
     else:
@@ -83,7 +83,7 @@ def text_getter(wet_file, url):
             if record.rec_headers.get_header('WARC-Target-URI') == url: 
                 if record.rec_type == 'conversion': 
                     print(record.rec_type)
-                    print(multiprocessing.current_process())
+                    #print(multiprocessing.current_process())
                     text = record.content_stream().read() 
                     text = text.decode('utf-8')
                     print('done')
@@ -107,6 +107,8 @@ def parallelize_df(df, function):
         pool.close()
         pool.join()
     return df
+
+
 
 
 

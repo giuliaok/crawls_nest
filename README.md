@@ -45,12 +45,12 @@ $ python process_warc_files.py --data_directory data_directory --get True --geog
 
 ### Requirements
 
-This project is based on ```python==3.7```. The dependencies are as follow:
+This project is based on ```python==3.10.8``` but should work on previous versions as well after 3.7. The dependencies are as follow:
 ```
-keras-contrib==2.0.8
-scikit-learn==0.21.3
-flair==0.4.4
-scipy=1.3.1
+transformers==4.36.0
+requests==2.28.2
 gensim==3.8.1
-numpy==1.17.2
+warcio==1.7.4
+numpy==1.24.1
+beautifulsoup4==4.12.0
 ```

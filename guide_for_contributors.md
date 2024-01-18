@@ -55,7 +55,8 @@ The ``CC_files`` class carries out one main operation: extracting text or hyperl
 2. Request the link of the relevant file. We use the ``Session`` object in requests which allows to persist certain parameters across requests.
 3. We then process the response obtained for the file. **This response is an archival file containing on average ~25.000 webpage records. It does NOT only contain the record of the target webpage.** The file hence needs to be iterated upon to find the taget webpage, and this is done through the warcio class ```ArchiveIterator```.
    - Within ``wet`` files, text is contained within the ``conversion`` record type. To understand the characteristics of this type of record, we suggest you have a look at the [`WARC format documentation`](https://iipc.github.io/warc-specifications/specifications/warc-format/warc-1.1/)
-   - Within ``wat`` files, hyperlinks are found within the ``metadata`` record type. 
+   - Within ``wat`` files, hyperlinks are found within the ``metadata`` record type.
+4. Sometimes this might not work! This might be because the initial request has gone wrong, but we are not completely sure of what else might break archival requests. In that case, we catch the exception and proceede to the next webpage. 
 
   
 - The argument ```--get``` allows users to extract text from webpages and apply some functions over it. 

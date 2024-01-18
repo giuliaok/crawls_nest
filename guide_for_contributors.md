@@ -84,3 +84,9 @@ The argument ```--get``` allows users to extract text from webpages and apply so
 When calling [`process_warc_files.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/process_warc_files.py) a user might decide to extract postcodes (and for which geography), do text classification, or do both. 
 
 ### Attributes
+
+The class has currently got 3 attributes, all related to geography:
+
+- *geographies*: output the geographies for which we currently have collected a shapefile. This might serve in the future for plotting (still to be implemented...)
+- *all_geographies*: lists all local authorities in the UK having a distinct postcode. Users can chose a geography for postcode search from within this list. 
+- *postcodes_la*: returns the initials of each localy authority's postcode. This is used in the script when searching for postcodes in a user defined geography. 

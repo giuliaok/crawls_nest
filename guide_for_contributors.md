@@ -1,13 +1,19 @@
-crawls_nest: guide for future contributors! 
-========================================
+# crawls_nest: guide for future contributors! 
+
+- [TO-DO list](#to-do-list)
+- [ColumnarExplorer](#columnarexplorer)
+	- [Attributes](#attributes)
+- [CCFiles](#ccfiles)
+  - [Attributes](#attributes)
+  
 
 The workflow is structured over 2 main Classes: ``ColumnarExplorer`` and ``CCFiles``. 
 
 - ``ColumnarExplorer`` select CommonCrawl columnar files for a user defined month and year
 - ``CCFiles`` extracts text from CommonCrawl and processes it
 
-TO-DO list 
---------------------
+## TO-DO list 
+
 
 A TO-DO list containing missing features and bugs can be found [`here`](https://github.com/giuliaok/crawls_nest/issues/1)
 
@@ -23,6 +29,8 @@ For most crawls of the archive (2014 onwards), we can use the provided index to 
 
 
 The script for ColumnarExplorer extracts files in columnar format for a user defined monh and year. It is currently self contained and can be found in [`columnar_explorer.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/columnar_explorer.py). 
+
+### Attributes
 
 The class has got 3 main attributes: 
 
@@ -59,4 +67,13 @@ The ``CC_files`` class carries out one main operation: extracting text or hyperl
 4. Sometimes this might not work! This might be because the initial request has gone wrong, but we are not completely sure of what else might break archival requests. In that case, we catch the exception and proceede to the next webpage. 
 
   
-- The argument ```--get``` allows users to extract text from webpages and apply some functions over it. 
+The argument ```--get``` allows users to extract text from webpages and apply some functions over it. Currently The purpose of these functions is twofold: 
+
+1. Find and extract postcodes
+   - This can be done for a full country or for a specific geography
+2. Classify webpages by product sold
+   - We would like this to be done either for single webpages or for a full website. At the moment it is done for single webpages. 
+
+When calling ```process_warc_files.py``` a user might decide to extract postcodes (and for which geography), do text classification, or do both. 
+
+### Attributes

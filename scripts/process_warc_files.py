@@ -56,8 +56,9 @@ class CCFiles:
         Get text of archived webpages, a combination of text and postcodes per geography,
         or industrial classification
         """
-        df = pd.read_pickle('/Users/gocchini/Desktop/CC_project/tutorial_following/results01-02.pkl')
+        df = pd.read_pickle(f'{self.data_directory}/domains.pkl')
         df = df[0:20]
+        #replace the below with function from utils
         df['needed_warc'] = df['needed_warc'].str.replace('/warc/', '/wet/').replace('warc.gz', 'warc.wet.gz')
         df = utils.lambda_getter(df)
         df.dropna(subset = ['text'])
@@ -65,11 +66,11 @@ class CCFiles:
         if geography:
             geo_postcode = self.postcodes_la.get(geography)                                     #TO-DO: accept both lower and upper case geographies
             results_df = utils.postcode_counter_webpage(results_df, geography = geo_postcode)
-        #NEW CODE
+        else: 
+            results_df = utils.postcode_counter_webpage(results_df)
         if industry_class == True:
-            results_df = results_df['text'].apply(utils.text_classifier)
-        #end new code     
-        return print(results_df)
+            results_df = results_df['text'].apply(utils.text_classifier)     
+        return results_df
 
 
     def get_and_save(self, df_saving_size):
@@ -80,3 +81,26 @@ class CCFiles:
             results = pd.concat([results, parallelize_df(df, get)]) 
             results_to_pickle.to_pickle(self.data_directory)
         return results_to_pickle, results 
+
+def main():
+    parser = argparse.ArgumentParser(description="CCFiles Utility")
+    parser.add_argument("--data-directory", required=True, help="Path to the data directory")
+    parser.add_argument("--get-html", action="store_true", help="Call get_html method")
+    parser.add_argument("--get", action="store_true", help="Call get method")
+    parser.add_argument("--geography", help="Geography argument for get method")
+    parser.add_argument("--df_saving_size", help="Defines how often you want to save the results of file processing")
+    args = parser.parse_args()
+
+    cc_files_instance = CCFiles(data_directory=args.data_directory)
+
+    if args.get_html:
+        result = cc_files_instance.get_html()
+    elif args.get:
+        result = cc_files_instance.get(geography=args.geography)
+    else:
+        print("Specify either --get-html or --get option.")
+        return
+
+
+if __name__ == "__main__":
+    main()

@@ -2,6 +2,7 @@ import pandas as pd
 import utils
 import os
 import argparse
+import utils_html
 
 
 class CCFiles:
@@ -92,7 +93,7 @@ def main():
         result = cc_files_instance.get(geography=args.geography)
     else:
         print("Specify either --get-html or --get option.")
-        return
+    return result
 
 
 if __name__ == "__main__":

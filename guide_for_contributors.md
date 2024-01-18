@@ -2,8 +2,10 @@
 
 - [TO-DO list](#to-do-list)
 - [ColumnarExplorer](#columnarexplorer)
+  	- [Rationale](#rationale)
 	- [Attributes](#attributes)
 - [CCFiles](#ccfiles)
+  - [Rationale](#rationale)
   - [Attributes](#attributes)
   
 
@@ -19,6 +21,8 @@ A TO-DO list containing missing features and bugs can be found [`here`](https://
 
 ColumnarExplorer
 --------------------
+
+### Rationale
 
 For most crawls of the archive (2014 onwards), we can use the provided index to WARC files and URLs in a columnar format. This is substantially a dataframe looking something like:
 
@@ -57,7 +61,10 @@ https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz
 CCFiles
 --------------------
 
-The ``CC_files`` class carries out one main operation: extracting text or hyperlinks from a webpage's record. Texts are extracted using the --get argument while html using the --get_html argument. To extract both text and hyperlinks we rely on ```warcio```. Functions for extracting these two features for a webpage from an archival record are contained in the ```utils.py``` and ```utils_html.py``` scripts. Both functions, ```text_getter``` and ```html_getter``` respectively, work as follows: 
+
+### Rationale
+
+The ``CC_files`` class carries out one main operation: extracting text or hyperlinks from a webpage's record. The class is contained in the [`process_warc_files.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/process_warc_files.py) and heavily relies on functions written within the [`utils.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/utils.py) and [`utils_html.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/utils_html.py) scripts. Texts are extracted using the --get argument while html using the --get_html argument. To extract both text and hyperlinks we rely on ```warcio```. Functions for extracting these two features for a webpage from an archival record are contained in the ```utils.py``` and ```utils_html.py``` scripts. Both functions, ```text_getter``` and ```html_getter``` respectively, work as follows: 
 
 1. Convert the relevant warc file in a ``wet`` file for text and in a ``wat`` file for hyperlinks
 2. Request the link of the relevant file. We use the ``Session`` object in requests which allows to persist certain parameters across requests.
@@ -74,6 +81,6 @@ The argument ```--get``` allows users to extract text from webpages and apply so
 2. Classify webpages by product sold
    - We would like this to be done either for single webpages or for a full website. At the moment it is done for single webpages. 
 
-When calling ```process_warc_files.py``` a user might decide to extract postcodes (and for which geography), do text classification, or do both. 
+When calling [`process_warc_files.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/process_warc_files.py) a user might decide to extract postcodes (and for which geography), do text classification, or do both. 
 
 ### Attributes

@@ -49,4 +49,9 @@ https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz
 CCFiles
 --------------------
 
+The ``CC_files`` class carries out one main operation: extracting text or hyperlinks from a webpage's record. Texts are extracted using the --get argument while html using the --get_html argument. To extract both text and hyperlinks we rely on ```warcio```. Extracting these two features for a webpage from an archival record works as follows: 
 
+1. Convert the relevant warc file in a ``wet`` file for text and in a ``wat`` file for hyperlinks 
+
+  
+- The argument ```--get``` allows users to extract text from webpages and apply some functions over this text. 

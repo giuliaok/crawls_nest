@@ -2,7 +2,7 @@ import pandas as pd
 import utils
 import os
 import argparse
-from llama_cpp import Llama
+
 
 class CCFiles:
     def __init__(self, data_directory) -> None:
@@ -44,13 +44,6 @@ class CCFiles:
         clean_df_with_links = df_with_links.drop(columns = ['html'])
         return clean_df_with_links.head()
 
-    def text_classifier(self, model_path):
-        llm = Llama(model_path = model_path)
-        prompt_example = ("Tell me what product this company sells in less than 100 words")
-        output = llm(prompt_example, max_tokens=512, echo=True)
-        class_ = output["choices"][0]["text"]
-        return class_
-
     def get(self, geography = None, industry_class = False) -> pd.DataFrame:
         """
         Get text of archived webpages, a combination of text and postcodes per geography,
@@ -69,7 +62,7 @@ class CCFiles:
         else: 
             results_df = utils.postcode_counter_webpage(results_df)
         if industry_class == True:
-            results_df = results_df['text'].apply(utils.text_classifier)     
+            results_df = results_df.apply(utils.classify)     
         return results_df
 
 

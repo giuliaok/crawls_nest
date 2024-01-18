@@ -13,6 +13,7 @@ import time
 import re
 import json
 from tqdm import tqdm  
+from llama_cpp import Llama
 
 
 def warc_getter(df):
@@ -36,7 +37,7 @@ def postcode_finder(text):
     postcodes = re.findall(r'([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})', text)
     return list(postcodes) 
 
-def postcode_counter(text, geography = None): #REWRITE
+def postcode_counter(text, geography = None): 
     """
     Extract postcodes from regex, count how many times each postcode appears in a webpage and store the postcode + count in a dictionary 
     """
@@ -98,6 +99,24 @@ def text_getter(wet_file, url):
         Find way to append these exceptioins so they can be reused! 
         """
     session.close()
+
+def text_classifier(prompt): #TO-DO: allow for model to be user defined 
+    llm = Llama(model_path = '/Users/gocchini/Downloads/llama-2-13b-chat.Q4_K_M.gguf')
+    output = llm(prompt, max_tokens=512, echo=True)
+    class_ = output["choices"][0]["text"]
+    return class_
+
+def truncate_if_needed(text, max_length=512):
+    if len(text) > max_length:
+        return text[:max_length]
+    return text
+
+def classify(df):
+    example_prompt = "Tell me what product this company sells in less than 100 words:"
+    df['classificandum'] = example_prompt + df['text']
+    df['classificandum'] = df['classificandum'].apply(truncate_if_needed)
+    df['class'] = df['classificandum'].apply(text_classifier)
+    return df 
 
 def parallelize_df(df, function):
     n_cores = os.cpu_count()

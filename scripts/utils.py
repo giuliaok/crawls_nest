@@ -53,16 +53,27 @@ def postcode_counter(text, geography = None):
 
 def postcode_counter_webpage(df, geography = None):
     """
-    Get dictionaries of postcodes + counts for webpage  
+    Get dictionaries of postcodes + counts for webpage. Should you want counts for website, use the function below 
+    (website_aggregator_postcode)  
     """
     df['postcode'] = df['text'].apply(postcode_counter, geography = geography)
     return df
 
-def website_aggregator(df):
+def website_aggregator_postcode(df):
+    """
+    Get postcode counts for the same website starting from the results of postcode_counter_webpage
+    """
     df_group = df.groupby(['url_host_name']).agg({'postcode': list}).reset_index()
     df_group['website_postcodes'] = df_group['postcode'].apply(lambda x: {k: v for d in x for k, v in d.items()})
     df_group = df_group.drop(['postcode'], axis = 1)
     return df_group 
+
+def website_aggregator(df):
+    """
+    Aggregate text from webpages into website    
+    """
+    result_df = df.groupby('url_host_name')['text'].agg(lambda x: ' '.join(x)).reset_index()
+    return result_df
 
 def text_getter(wet_file, url):
     session = requests.Session()
@@ -112,6 +123,7 @@ def truncate_if_needed(text, max_length=512):
     return text
 
 def classify(df):
+    #shall we aggregate webpages into websites or not? 
     example_prompt = "Tell me what product this company sells in less than 100 words:"
     df['classificandum'] = example_prompt + df['text']
     df['classificandum'] = df['classificandum'].apply(truncate_if_needed)

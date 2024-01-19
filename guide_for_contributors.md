@@ -101,4 +101,4 @@ The class has currently got 3 attributes, all related to geography:
 
 ### Parallelization
 
-
+Warc file processing works way faster when parallelised. We provide code to parallelise the ```get``` and ```get_html``` function through multiprocessing. 

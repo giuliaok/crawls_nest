@@ -62,7 +62,7 @@ https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz
 
 ### Parallelization
 
-It is not yet completely clear to me whether the file downloading process would benefit from parallelization, as it is highly affected by a user's broadband download speed. This hypothesis still needs to be tested and has been flagged in the [`TO-DO list`](https://github.com/giuliaok/crawls_nest/issues/1)
+It is not yet completely clear to me whether the file downloading process would benefit from parallelization, as it is highly affected by a user's broadband download speed. This hypothesis still needs to be tested and has been flagged in the [`TO-DO list`](https://github.com/giuliaok/crawls_nest/issues/1) :innocent:
 
 ColumnarExplorer
 
@@ -91,6 +91,8 @@ The argument ```--get``` allows users to extract text from webpages and apply so
 
 When calling [`process_warc_files.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/process_warc_files.py) a user might decide to extract postcodes (and for which geography), do text classification, or do both. 
 
+:exclamation: When I started working with warc format data, I found [`this tutorial`](https://skeptric.com/notebooks/WAT%20WET%20WARC%20-%20Common%20Crawl%20Archives.html) extremely useful. It is very simple but covers all the basics 
+
 ### Attributes
 
 The class has currently got 3 attributes, all related to geography:
@@ -101,4 +103,4 @@ The class has currently got 3 attributes, all related to geography:
 
 ### Parallelization
 
-Warc file processing works way faster when parallelised. We provide code to parallelise the ```get``` and ```get_html``` function through multiprocessing. 
+Warc file processing works way faster when parallelised. We provide code to parallelise the ```get``` and ```get_html``` function through multiprocessing. The ```get_and_save``` function applies the parallelism and additonally saves the results dataframe every *n* files processed. The number of files processed before saving should be defined by the user. We highly suggest using this parameter as the script might run for days and you would not want to lose all that work... 

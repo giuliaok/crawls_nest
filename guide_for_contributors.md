@@ -4,9 +4,11 @@
 - [ColumnarExplorer](#columnarexplorer)
   	- [Rationale](#rationale)
 	- [Attributes](#attributes)
+   	- [Parallelization](#parallelization)
 - [CCFiles](#ccfiles)
   - [Rationale](#rationale)
   - [Attributes](#attributes)
+  - [Parallelization](#parallelization)
   
 
 The workflow is structured over 2 main Classes: ``ColumnarExplorer`` and ``CCFiles``. 
@@ -58,6 +60,12 @@ https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz
  'https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00296-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet', ... ]
 ```
 
+### Parallelization
+
+It is not yet completely clear to me whether the file downloading process would benefit from parallelization, as it is highly affected by a user's broadband download speed. This hypothesis still needs to be tested and has been flagged in the [`TO-DO list`](https://github.com/giuliaok/crawls_nest/issues/1)
+
+ColumnarExplorer
+
 CCFiles
 --------------------
 
@@ -89,4 +97,8 @@ The class has currently got 3 attributes, all related to geography:
 
 - *geographies*: output the geographies for which we currently have collected a shapefile. This might serve in the future for plotting (still to be implemented...)
 - *all_geographies*: lists all local authorities in the UK having a distinct postcode. Users can chose a geography for postcode search from within this list. 
-- *postcodes_la*: returns the initials of each localy authority's postcode. This is used in the script when searching for postcodes in a user defined geography. 
+- *postcodes_la*: returns the initials of each localy authority's postcode. This is used in the script when searching for postcodes in a user defined geography.
+
+### Parallelization
+
+

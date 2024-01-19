@@ -36,6 +36,25 @@ For most crawls of the archive (2014 onwards), we can use the provided index to 
 
 The script for ColumnarExplorer extracts files in columnar format for a user defined monh and year. It is currently self contained and can be found in [`columnar_explorer.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/columnar_explorer.py). 
 
+Each crawl contains approximately 900 parquet files in columnar format, which cana be downloaded through sending a request to the *monthly_urls* attribute (see below). The files come as a list in the following format: 
+
+```ruby
+['https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00299-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet',
+ 'https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00298-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet',
+ 'https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00297-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet',
+ 'https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00296-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet', ... ]
+```
+
+Each one of these parquet files is around 2 GB in size, and depending on one's broadband connetion speed might take several minutes to download. As saving the complete files locally would occupy a ridiculous amount of memory, our pipeline avoids this by using the ```get_domain``` function in [`columnar_explorer.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/columnar_explorer.py) as follows: 
+
+1. Initialise an empty dataframe
+2. Download the parquet file through ``curl``
+3. Open the file and slice it according to one's research need
+4. Only save in memory the essential features of the columnar file (e.g. webpage name, WARC location)
+5. Append to the initialised dataframe and repeat for each file
+
+We experimented on *.co.uk* webpages, finding approximately 2 million webpages stored for each archive's segment, occupying ~900MB in memory. Doable :smiley: 
+
 ### Attributes
 
 The class has got 3 main attributes: 
@@ -50,14 +69,6 @@ The class has got 3 main attributes:
 
 ```ruby
 https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz
-```
-
-
-```ruby
-['https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00299-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet',
- 'https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00298-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet',
- 'https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00297-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet',
- 'https://data.commoncrawl.org/cc-index/table/cc-main/warc/crawl=CC-MAIN-2022-33/subset=warc/part-00296-d466b69e-be2b-4525-ac34-1b10d57329da.c000.gz.parquet', ... ]
 ```
 
 ### Parallelization
@@ -103,4 +114,4 @@ The class has currently got 3 attributes, all related to geography:
 
 ### Parallelization
 
-Warc file processing works way faster when parallelised. We provide code to parallelise the ```get``` and ```get_html``` function through multiprocessing. The ```get_and_save``` function applies the parallelism and additonally saves the results dataframe every *n* files processed. The number of files processed before saving should be defined by the user. We highly suggest using this parameter as the script might run for days and you would not want to lose all that work... 
+Warc file processing works way faster when parallelised. We provide code to parallelise the ```get``` and ```get_html``` function through multiprocessing. The ```get_and_save``` function applies the parallelism and additonally saves the results dataframe every *n* files processed. The number of files processed before saving should be defined by the user. We highly suggest using this parameter as the script might run for days and you would not want to lose all that work. Moreover, this allows you to work on the already processed data while the script continues to run.  

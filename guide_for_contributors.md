@@ -7,6 +7,7 @@
    	- [Parallelization](#parallelization)
 - [CCFiles](#ccfiles)
   - [Rationale](#rationale)
+  	- [Text classification](#text-classification)
   - [Attributes](#attributes)
   - [Parallelization](#parallelization)
   
@@ -103,6 +104,10 @@ The argument ```--get``` allows users to extract text from webpages and apply so
 When calling [`process_warc_files.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/process_warc_files.py) a user might decide to extract postcodes (and for which geography), do text classification, or do both. 
 
 :exclamation: When I started working with warc format data, I found [`this tutorial`](https://skeptric.com/notebooks/WAT%20WET%20WARC%20-%20Common%20Crawl%20Archives.html) extremely useful. It is very simple but covers all the basics 
+
+#### Text Classification 
+
+To allow for accurate and **relatively** fast text classification on the spot we use a quantized version of [`Llama`](https://ai.meta.com/llama/), [`llama_cpp`]. We use it in its chat form, whereby for each webpage text we ask a prompt of the type *what is content of this webbpage about?*. Optimally, we would like the user to be able to define both the prompt to feed to the model (according to their research needs), as well as their language model of choice.  
 
 ### Attributes
 

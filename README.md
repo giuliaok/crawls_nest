@@ -31,6 +31,12 @@ usage instructions of the library.
 
 # Usage
 
+For ease of usage, clone the repository via 
+
+```shell script
+$ git clone https://github.com/giuliaok/crawls_nest.git
+```
+
 ### File collection
 
 The ```columnar_explorer.py``` script requires two arguments: ```month``` and ```year```, which serve to define the chunks of the crawl we want to work with. We provide two further optional arguments:

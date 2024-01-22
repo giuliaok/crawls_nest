@@ -123,6 +123,8 @@ To the question: *Tell me what product this company sells*, the model answers:
 'The company sells Minecraft server builds and plugins for the Spigot Minecraft server software.'
 ```
 
+:question: **Why are we currently classifying webpages and not websites?** At te moment, this is because of ```llama cpp``` context window, or at least because of the usage I have done of it: my prompt's context window needs to be shorter than 512 tokens. The text truncation is implemented ```truncate_if_needed``` in [`utils.py`](https://github.com/giuliaok/crawls_nest/blob/main/scripts/utils.py). 
+
 ### Attributes
 
 The class has currently got 3 attributes, all related to geography:

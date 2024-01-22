@@ -63,7 +63,7 @@ class CCFiles:
         else: 
             results_df = utils.postcode_counter_webpage(results_df)
         if industry_class == True:
-            results_df = results_df.apply(utils.classify)     
+            results_df = utils.classify(results_df)    
         return results_df
 
 

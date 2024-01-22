@@ -107,7 +107,6 @@ class ColumnarExplorer:
         """
         Extract indices to access monthly dumps of the crawl, template of needed url is 'https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz' 
         """
-        print('start')
         CC_INDEX_SERVER = 'https://data.commoncrawl.org/'
         DATA_ACCESS_PREFIX = CC_INDEX_SERVER + 'crawl-data/'
         DATA_ACCESS_SUFFIX = '/cc-index-table.paths.gz'
@@ -116,7 +115,6 @@ class ColumnarExplorer:
         print(INDEX_PATHS)
 
         index_paths = requests.get(INDEX_PATHS)
-        print(index_paths)
         open('monthly_index.gz', 'wb').write(index_paths.content)
         links_for_download_cdx = []
         with gzip.open('monthly_index.gz', 'rb') as f:
@@ -125,7 +123,6 @@ class ColumnarExplorer:
         os.remove('monthly_index.gz')
         links_for_download_cdx_strings = [str(byte_string, 'UTF-8').rstrip('\n') for byte_string in links_for_download_cdx]
         links_to_get_indices = [CC_INDEX_SERVER + x for x in links_for_download_cdx_strings] 
-        links_to_get_indices = links_to_get_indices[0:6]
 
         return(links_to_get_indices)
 

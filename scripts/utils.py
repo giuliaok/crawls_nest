@@ -112,7 +112,7 @@ def text_getter(wet_file, url):
     session.close()
 
 def text_classifier(prompt): #TO-DO: allow for model to be user defined 
-    llm = Llama(model_path = 'llama-2-13b-chat.Q4_K_M.gguf')
+    llm = Llama(model_path = '/Users/gocchini/Downloads/llama-2-13b-chat.Q4_K_M.gguf')
     output = llm(prompt, max_tokens=512, echo=True)
     class_ = output["choices"][0]["text"]
     return class_

@@ -114,13 +114,13 @@ To allow for accurate and **relatively** fast text classification on the spot we
 :confused: The model outputs an arrogantly confident answer even if the content of a website is debatable for a human...consider the text below: 
 
 ```ruby
-00 - Index page\n00\nRandomness\nSkip to content\nSearch\nAdvanced search\nQuick links\nUnanswered topics\nActive topics\nSearch\nForums\nFAQ\nLogin\nRegister\nSearch\nLogin\nRegister\nBoard index\nSearch\nIt is currently Fri Aug 19, 2022 2:13 am\nAll times are UTC\nWelcome\nTopics\nPosts\nLast post\nSpigot Minecraft server\nSpigot Minecraft server\nSubforum:\nSpigot 1.8.8 Plugins\t\nTopics: 2\nLast post: Minecraft Server build - Ubun… by 00, Sun Aug 02, 2020 5:38 pm\n2 Topics\n2 Posts\nLast post Minecraft Server build - Ubun… by 00, Sun Aug 02, 2020 5:38 pm\nSpigot 1.16 Plugins\tSubforum:\nTopics: 4\nLast post: Help with Spigot 1.16 Plugi… by 00, Sat Dec 19, 2020 4:57 am\n4 Topics\n4 Posts\nLast post Help with Spigot 1.16 Plugi… by 00, Sat Dec 19, 2020 4:57 am\nTopic views\nSearch forums\n
+'00 - Index page\n00\nRandomness\nSkip to content\nSearch\nAdvanced search\nQuick links\nUnanswered topics\nActive topics\nSearch\nForums\nFAQ\nLogin\nRegister\nSearch\nLogin\nRegister\nBoard index\nSearch\nIt is currently Fri Aug 19, 2022 2:13 am\nAll times are UTC\nWelcome\nTopics\nPosts\nLast post\nSpigot Minecraft server\nSpigot Minecraft server\nSubforum:\nSpigot 1.8.8 Plugins\t\nTopics: 2\nLast post: Minecraft Server build - Ubun… by 00, Sun Aug 02, 2020 5:38 pm\n2 Topics\n2 Posts\nLast post Minecraft Server build - Ubun… by 00, Sun Aug 02, 2020 5:38 pm\nSpigot 1.16 Plugins\tSubforum:\nTopics: 4\nLast post: Help with Spigot 1.16 Plugi… by 00, Sat Dec 19, 2020 4:57 am\n4 Topics\n4 Posts\nLast post Help with Spigot 1.16 Plugi… by 00, Sat Dec 19, 2020 4:57 am\nTopic views\nSearch forums\n'
 ```
 
 To the question: *Tell me what product this company sells*, the model answers: 
 
 ```ruby
-The company sells Minecraft server builds and plugins for the Spigot Minecraft server software.
+'The company sells Minecraft server builds and plugins for the Spigot Minecraft server software.'
 ```
 
 ### Attributes

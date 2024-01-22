@@ -78,7 +78,6 @@ https://data.commoncrawl.org/crawl-data/CC-MAIN-2022-33/cc-index-table.paths.gz
 
 It is not yet completely clear to me whether the file downloading process would benefit from parallelization, as it is highly affected by a user's broadband download speed. This hypothesis still needs to be tested and has been flagged in the [`TO-DO list`](https://github.com/giuliaok/crawls_nest/issues/1) :innocent:
 
-ColumnarExplorer
 
 CCFiles
 --------------------
